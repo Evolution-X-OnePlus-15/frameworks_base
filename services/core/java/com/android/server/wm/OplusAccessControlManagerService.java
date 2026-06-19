@@ -11,6 +11,7 @@ import android.provider.Settings;
 import android.util.ArrayMap;
 import android.util.Slog;
 
+import com.oplus.app.AxSandboxService; // Added for new functionality in HEAD
 import com.oplus.app.IOplusAccessControlManager;
 import com.oplus.app.IOplusAccessControlObserver;
 import com.oplus.app.OplusAccessControlInfo;
