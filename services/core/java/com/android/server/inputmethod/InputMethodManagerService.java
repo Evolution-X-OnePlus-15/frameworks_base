@@ -3264,15 +3264,8 @@ public final class InputMethodManagerService implements IInputMethodManagerImpl.
         }
         // If user is a profile, use preference of its parent profile.
         final int profileParentUserId = mUserManagerInternal.getProfileParentId(mCurrentImeUserId);
-        final int mode = LineageSettings.System.getIntForUser(mContext.getContentResolver(),
-                LineageSettings.System.HIGH_TOUCH_POLLING_RATE_ENABLE, 0, profileParentUserId);
-        final int reportRateMode = mode == 1 ? 3 : mode;
-        final boolean enabled = reportRateMode != 0;
-        try {
-            SystemProperties.set(TOUCH_REPORT_RATE_PROP, String.valueOf(reportRateMode));
-        } catch (RuntimeException e) {
-            Slog.e(TAG, "Failed to restore touch polling mode: " + reportRateMode, e);
-        }
+        final boolean enabled = LineageSettings.System.getIntForUser(mContext.getContentResolver(),
+                LineageSettings.System.HIGH_TOUCH_POLLING_RATE_ENABLE, 0, profileParentUserId) != 0;
         mLineageHardware.set(LineageHardwareManager.FEATURE_HIGH_TOUCH_POLLING_RATE, enabled);
     }
 

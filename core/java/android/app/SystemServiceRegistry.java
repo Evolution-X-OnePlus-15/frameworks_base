@@ -1073,6 +1073,16 @@ public final class SystemServiceRegistry {
                         : new AppLockManager(ctx.getOuterContext(), axSandboxManager);
             }});
 
+        registerService(Context.APP_LOCK_SERVICE, AppLockManager.class,
+                new CachedServiceFetcher<AppLockManager>() {
+            @Override
+            public AppLockManager createService(ContextImpl ctx) {
+                AxSandboxManager axSandboxManager =
+                        ctx.getSystemService(AxSandboxManager.class);
+                return axSandboxManager == null ? null
+                        : new AppLockManager(ctx.getOuterContext(), axSandboxManager);
+            }});
+
         registerService(Context.CAMERA_SERVICE, CameraManager.class,
                 new CachedServiceFetcher<CameraManager>() {
             @Override
