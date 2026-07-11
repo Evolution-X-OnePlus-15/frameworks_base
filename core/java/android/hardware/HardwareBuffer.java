@@ -391,18 +391,6 @@ public final class HardwareBuffer implements Parcelable, AutoCloseable {
     }
 
     /**
-     * Private use only. See {@link #create(int, int, int, int, long)}. May also be
-     * called from JNI using an already allocated native <code>HardwareBuffer</code>.
-     */
-    @UnsupportedAppUsage(maxTargetSdk = Build.VERSION_CODES.P, trackingBug = 115609023)
-    private HardwareBuffer(long nativeObject) {
-        mNativeObject = nativeObject;
-        long bufferSize = nEstimateSize(nativeObject);
-        mCleaner = getRegistry(bufferSize).registerNativeAllocation(this, mNativeObject);
-        mCloseGuard.open("HardwareBuffer.close");
-    }
-
-    /**
      * @hide
      * Builds the NativeAllocationRegistry for an {@code sp<GraphicBuffer>} holder (the native
      * object handed in by ImageReader$SurfaceImage#nativeGetOplusHardwareBuffer). Unlike
@@ -415,6 +403,18 @@ public final class HardwareBuffer implements Parcelable, AutoCloseable {
         return com.android.libcore.readonly.Flags.nativeMetrics()
             ? NativeAllocationRegistry.createNonmalloced(cls, func, size)
             : NativeAllocationRegistry.createNonmalloced(cls.getClassLoader(), func, size);
+    }
+
+    /**
+     * Private use only. See {@link #create(int, int, int, int, long)}. May also be
+     * called from JNI using an already allocated native <code>HardwareBuffer</code>.
+     */
+    @UnsupportedAppUsage(maxTargetSdk = Build.VERSION_CODES.P, trackingBug = 115609023)
+    private HardwareBuffer(long nativeObject) {
+        mNativeObject = nativeObject;
+        long bufferSize = nEstimateSize(nativeObject);
+        mCleaner = getRegistry(bufferSize).registerNativeAllocation(this, mNativeObject);
+        mCloseGuard.open("HardwareBuffer.close");
     }
 
     /**
