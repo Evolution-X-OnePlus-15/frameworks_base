@@ -462,7 +462,6 @@ constructor(
             return
         }
 
-        if (isDeviceInPocket) return
         faceAuthenticationStatusOverride.value = null
         faceAuthenticationLogger.authRequested(uiEvent)
         repository.requestAuthenticate(uiEvent, fallbackToDetection = fallbackToDetect)
