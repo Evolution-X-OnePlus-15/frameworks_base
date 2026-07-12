@@ -255,6 +255,8 @@ public final class NotificationRecord {
     // lifetime extended.
     private boolean mCanceledAfterLifetimeExtension = false;
 
+    private boolean mIsBubbleUpSuppressedByAppLock = false;
+
     // type of the bundle if the notification was classified
     private int mBundleType = Adjustment.TYPE_OTHER;
 
@@ -2121,6 +2123,14 @@ public final class NotificationRecord {
             mKeyguardManager = mContext.getSystemService(KeyguardManager.class);
         }
         return mKeyguardManager;
+    }
+
+    public void setBubbleUpSuppressedByAppLock(boolean suppressed) {
+        mIsBubbleUpSuppressedByAppLock = suppressed;
+    }
+
+    public boolean isBubbleUpSuppressedByAppLock() {
+        return mIsBubbleUpSuppressedByAppLock;
     }
 
     /**

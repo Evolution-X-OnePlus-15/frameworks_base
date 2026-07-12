@@ -298,6 +298,7 @@ import com.android.server.am.PendingIntentRecord;
 import com.android.server.am.UserState;
 import com.android.server.am.psc.ProcessRecordInternal;
 import com.android.server.am.psc.ProcessStateController;
+import com.android.server.app.AppLockManagerServiceInternal;
 import com.android.server.firewall.IntentFirewall;
 import com.android.server.grammaticalinflection.GrammaticalInflectionManagerInternal;
 import com.android.server.pm.UserManagerInternal;
@@ -840,6 +841,8 @@ public class ActivityTaskManagerService extends IActivityTaskManager.Stub {
 
     // Lineage sdk activity related helper
     private LineageActivityManager mLineageActivityManager;
+
+    private AppLockManagerServiceInternal mAppLockManagerService = null;
 
     private final class SettingObserver extends ContentObserver {
         private final Uri mFontScaleUri = Settings.System.getUriFor(FONT_SCALE);
@@ -4713,6 +4716,80 @@ public class ActivityTaskManagerService extends IActivityTaskManager.Stub {
                 task.mUserId,  isLowResolution, usage);
     }
 
+    @Override
+    public TaskSnapshot getTaskSnapshot(int taskId, boolean isLowResolution) {
+        mAmInternal.enforceCallingPermission(READ_FRAME_BUFFER, "getTaskSnapshot()");
+        final long ident = Binder.clearCallingIdentity();
+        try {
+            final Task task;
+            synchronized (mGlobalLock) {
+                task = mRootWindowContainer.anyTaskForId(taskId,
+                        MATCH_ATTACHED_TASK_OR_RECENT_TASKS);
+                if (task == null) {
+                    Slog.w(TAG, "getTaskSnapshot: taskId=" + taskId + " not found");
+                    return null;
+                }
+                final TaskSnapshot snapshot;
+                if (com.android.window.flags.Flags.reduceTaskSnapshotMemoryUsage()) {
+                    final int retrieveFlag = TaskSnapshotManager.convertRetrieveFlag(
+                            isLowResolution);
+                    snapshot = mWindowManager.mTaskSnapshotController.getSnapshot(
+                                    taskId, retrieveFlag, TaskSnapshot.REFERENCE_WRITE_TO_PARCEL);
+                } else {
+                    snapshot = mWindowManager.mTaskSnapshotController.getSnapshot(
+                            taskId, isLowResolution, TaskSnapshot.REFERENCE_WRITE_TO_PARCEL);
+                }
+                if (snapshot != null) {
+                    return snapshot;
+                }
+            }
+            // Don't call this while holding the lock as this operation might hit the disk.
+            return mWindowManager.mTaskSnapshotController.getSnapshotFromDisk(taskId,
+                    task.mUserId, isLowResolution, TaskSnapshot.REFERENCE_WRITE_TO_PARCEL);
+        } finally {
+            Binder.restoreCallingIdentity(ident);
+        }
+    }
+
+    @Override
+    public TaskSnapshot takeTaskSnapshot(int taskId, boolean updateCache) {
+        mAmInternal.enforceCallingPermission(READ_FRAME_BUFFER, "takeTaskSnapshot()");
+        final long ident = Binder.clearCallingIdentity();
+        try {
+            final Supplier<TaskSnapshot> supplier;
+            synchronized (mGlobalLock) {
+                final Task task = mRootWindowContainer.anyTaskForId(taskId,
+                        MATCH_ATTACHED_TASK_OR_RECENT_TASKS);
+                if (task == null || !task.isVisible()) {
+                    Slog.w(TAG, "takeTaskSnapshot: taskId=" + taskId + " not found or not visible");
+                    return null;
+                }
+                final Task rootTask = task.getRootTask();
+                final String packageName =
+                    rootTask != null && rootTask.realActivity != null
+                        ? rootTask.realActivity.getPackageName()
+                        : null;
+                if (packageName != null && getAppLockManagerService().requireUnlock(
+                        packageName, task.mUserId)) {
+                    return null;
+                }
+                // Note that if updateCache is true, ActivityRecord#shouldUseAppThemeSnapshot will
+                // be used to decide whether the task is allowed to be captured because that may
+                // be retrieved by recents. While if updateCache is false, the real snapshot will
+                // always be taken and the snapshot won't be put into SnapshotPersister.
+                if (updateCache) {
+                    supplier = mWindowManager.mTaskSnapshotController.getRecordSnapshotSupplier(
+                            task, TaskSnapshot.REFERENCE_WRITE_TO_PARCEL);
+                } else {
+                    return mWindowManager.mTaskSnapshotController.snapshot(task);
+                }
+            }
+            return supplier != null ? supplier.get() : null;
+        } finally {
+            Binder.restoreCallingIdentity(ident);
+        }
+    }
+
     /** Return the user id of the last resumed activity. */
     @Override
     public @UserIdInt
@@ -6301,6 +6378,13 @@ public class ActivityTaskManagerService extends IActivityTaskManager.Stub {
     @Nullable
     ActivityRecord.WindowStyle getWindowStyle(String packageName, int theme, int userId) {
         return mWindowStyleCache.get(packageName, theme, userId);
+    }
+
+    AppLockManagerServiceInternal getAppLockManagerService() {
+        if (mAppLockManagerService == null) {
+            mAppLockManagerService = LocalServices.getService(AppLockManagerServiceInternal.class);
+        }
+        return mAppLockManagerService;
     }
 
     AppWarnings getAppWarningsLocked() {
@@ -8513,6 +8597,14 @@ public class ActivityTaskManagerService extends IActivityTaskManager.Stub {
         @Override
         public int getLockTaskModeState() {
             return ActivityTaskManagerService.this.getLockTaskModeState();
+        }
+
+        @Override
+        public boolean isVisibleActivity(IBinder activityToken) {
+            synchronized (mGlobalLock) {
+                final ActivityRecord r = ActivityRecord.isInRootTaskLocked(activityToken);
+                return r != null && r.isInterestingToUserLocked();
+            }
         }
     }
 

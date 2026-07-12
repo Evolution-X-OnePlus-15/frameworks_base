@@ -107,4 +107,27 @@
     <java-symbol type="dimen" format="float" name="presentation_clock_text_size" />
     <java-symbol type="dimen" format="float" name="large_clock_text_size" />
     <java-symbol type="dimen" format="float" name="small_clock_text_size" />
+
+    <!-- Sleep Mode -->
+    <java-symbol type="drawable" name="ic_sleep" />
+    <java-symbol type="string" name="notification_channel_sleep" />
+    <java-symbol type="string" name="sleep_mode_notification_title" />
+    <java-symbol type="string" name="sleep_mode_notification_content" />
+    <java-symbol type="string" name="sleep_mode_enabled_toast" />
+    <java-symbol type="string" name="sleep_mode_disabled_toast" />
+
+    <!-- CPU temperature -->
+    <java-symbol type="string" name="config_cpu_temp_path" />
+    <java-symbol type="integer" name="config_sysCPUTempMultiplier" />
+    <java-symbol type="integer" name="config_sysBatteryTempMultiplier" />
+
+    <!-- GameSpace -->
+    <java-symbol type="string" name="gamespace_new_game_added" />
+
+    <!-- Vibrator service -->
+    <java-symbol type="array" name="config_textureTickVibePattern" />
+    
+    <!-- App lock -->
+    <java-symbol type="string" name="unlock_application" />
+    <java-symbol type="array" name="config_appLockAllowedSystemApps" />
 </resources>

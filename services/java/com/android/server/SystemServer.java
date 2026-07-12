@@ -129,6 +129,7 @@ import com.android.server.alarm.AlarmManagerService;
 import com.android.server.allowlist.AllowlistService;
 import com.android.server.am.ActivityManagerService;
 import com.android.server.ambientcontext.AmbientContextManagerService;
+import com.android.server.app.AppLockManagerService;
 import com.android.server.appbackup.AppDataBackupService;
 import com.android.server.app.GameManagerService;
 import com.android.server.appbinding.AppBindingService;
@@ -2936,6 +2937,11 @@ public final class SystemServer implements Dumpable {
             } catch (Throwable e) {
                 reportWtf("starting SelinuxAuditLogsService", e);
             }
+            t.traceEnd();
+
+            // LauncherAppsService uses AppLockManagerService.
+            t.traceBegin("AppLockManagerService");
+            mSystemServiceManager.startService(AppLockManagerService.Lifecycle.class);
             t.traceEnd();
 
             // LauncherAppsService uses ShortcutService.

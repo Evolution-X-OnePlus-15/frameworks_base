@@ -227,11 +227,11 @@ constructor(
                     axAppLockerHelper.needsAuth(entry.sbn.packageName, entry.sbn.user.identifier)
             val needsRedaction =
                 isAppLocked || lockscreenUserManager.getRedactionType(entry) != REDACTION_TYPE_NONE
+            val isSecure = entry.sbn.isContentSecure
+            val needsRedaction = isSecure || lockscreenUserManager.getRedactionType(entry) != REDACTION_TYPE_NONE
             val isSensitive = userPublic && needsRedaction
-            entry.setSensitive(
-                isSensitive || shouldProtectNotification,
-                isAppLocked || deviceSensitive,
-            )
+            entry.setSensitive(isSensitive || shouldProtectNotification, isSecure || deviceSensitive)
+            entry.row.setForceHideContents(isSecure)
             if (screenshareNotificationHiding()) {
                 entry.row?.setPublicExpanderVisible(!shouldProtectNotification)
             }

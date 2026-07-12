@@ -3036,14 +3036,21 @@ public class ActivityTaskSupervisor implements RecentTasks.Callbacks {
                     task.getTaskDisplayArea().moveHomeRootTaskToFront("startActivityFromRecents");
                 }
 
+                final Task rootTask = task.getRootTask();
+                final String packageName =
+                    rootTask != null && rootTask.realActivity != null
+                        ? rootTask.realActivity.getPackageName()
+                        : null;
+                final boolean needAppUnlock = packageName != null
+                        && mService.getAppLockManagerService()
+                                .requireUnlock(packageName, task.mUserId);
                 // If the user must confirm credentials (e.g. when first launching a work
                 // app and the Work Challenge is present), or we know ActivityStartInterceptor will
                 // intercept the launch, let startActivityInPackage handle the intercepting.
                 // TODO(b/456665032): Make this generic to all ActivityStartInterceptor
                 // interceptions, and optimize so we don't have to run the interception again.
                 if (!mService.mAmInternal.shouldConfirmCredentials(task.mUserId)
-                        && task.getRootActivity() != null
-                        && !shouldIntercept) {
+                        && task.getRootActivity() != null && !shouldIntercept && !needAppUnlock) {
                     final ActivityRecord targetActivity = task.getTopNonFinishingActivity();
 
                     mRootWindowContainer.startPowerModeLaunchIfNeeded(
