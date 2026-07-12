@@ -71,6 +71,7 @@ import com.android.internal.statusbar.IStatusBarService;
 import com.android.internal.util.CollectionUtils;
 
 import java.util.List;
+import java.util.ArrayList;
 
 import static android.provider.Settings.Global.ZEN_MODE_IMPORTANT_INTERRUPTIONS;
 import static android.provider.Settings.Global.ZEN_MODE_OFF;
@@ -572,6 +573,24 @@ public class Utils {
                 final boolean enabled = Settings.Secure.getIntForUser(mContext.getContentResolver(),
                         Settings.Secure.SLEEP_MODE_ENABLED, 0, UserHandle.USER_CURRENT) == 1;
                 setSleepMode(enabled);
+            }
+            
+            public static List<String> launchablePackages(Context context) {
+                List<String> list = new ArrayList<>();
+
+                Intent filter = new Intent(Intent.ACTION_MAIN, null);
+                filter.addCategory(Intent.CATEGORY_LAUNCHER);
+
+                List<ResolveInfo> apps = context.getPackageManager().queryIntentActivities(filter,
+                        PackageManager.GET_META_DATA);
+
+                int numPackages = apps.size();
+                for (int i = 0; i < numPackages; i++) {
+                ResolveInfo app = apps.get(i);
+                list.add(app.activityInfo.packageName);
+                }
+
+                return list;
             }
         }
     }
