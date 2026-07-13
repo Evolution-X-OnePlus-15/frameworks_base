@@ -574,24 +574,24 @@ public class Utils {
                         Settings.Secure.SLEEP_MODE_ENABLED, 0, UserHandle.USER_CURRENT) == 1;
                 setSleepMode(enabled);
             }
-            
-            public static List<String> launchablePackages(Context context) {
-                List<String> list = new ArrayList<>();
-
-                Intent filter = new Intent(Intent.ACTION_MAIN, null);
-                filter.addCategory(Intent.CATEGORY_LAUNCHER);
-
-                List<ResolveInfo> apps = context.getPackageManager().queryIntentActivities(filter,
-                        PackageManager.GET_META_DATA);
-
-                int numPackages = apps.size();
-                for (int i = 0; i < numPackages; i++) {
-                ResolveInfo app = apps.get(i);
-                list.add(app.activityInfo.packageName);
-                }
-
-                return list;
-            }
         }
     }
+    public static List<String> launchablePackages(Context context) {
+        List<String> list = new ArrayList<>();
+
+        Intent filter = new Intent(Intent.ACTION_MAIN, null);
+        filter.addCategory(Intent.CATEGORY_LAUNCHER);
+
+        List<ResolveInfo> apps = context.getPackageManager().queryIntentActivities(filter,
+                PackageManager.GET_META_DATA);
+
+        int numPackages = apps.size();
+        for (int i = 0; i < numPackages; i++) {
+            ResolveInfo app = apps.get(i);
+            list.add(app.activityInfo.packageName);
+        }
+
+        return list;
+    }
 }
+
