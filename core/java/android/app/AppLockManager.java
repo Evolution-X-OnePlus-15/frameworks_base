@@ -37,6 +37,12 @@ public class AppLockManager {
     public static final boolean DEFAULT_HIDE_IN_LAUNCHER = false;
     /** @hide */
     public static final boolean DEFAULT_REDACT_NOTIFICATION = false;
+    /** @hide */
+    public static final boolean DEFAULT_PROTECT_APP = false;
+    /** @hide */
+    public static final long DEFAULT_TIMEOUT = 10 * 1000;
+    /** @hide */
+    public static final String ACTION_UNLOCK_APP = "android.app.action.UNLOCK_APP";
 
     private static final String SETTING_BIOMETRICS_ALLOWED = "app_lock_biometrics_allowed";
 
