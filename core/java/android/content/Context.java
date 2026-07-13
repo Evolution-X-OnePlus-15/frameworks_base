@@ -6954,14 +6954,6 @@ public abstract class Context {
     public static final String DISPLAY_HASH_SERVICE = "display_hash";
 
     /**
-     * {@link AppLockManager}.
-     *
-     * @see #getSystemService(String)
-     * @hide
-     */
-    public static final String APP_LOCK_SERVICE = "app_lock";
-
-    /**
      * Use with {@link #getSystemService} to retrieve a
      * {@link android.os.PocketManager} for accessing and listening to device pocket state.
      *
