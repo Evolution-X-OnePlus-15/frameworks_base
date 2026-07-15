@@ -127,7 +127,13 @@ public class KeyguardStatusBarViewController extends ViewController<KeyguardStat
             "system:" + Settings.System.STATUSBAR_EXTRA_PADDING_TOP;
     private static final String STATUSBAR_EXTRA_PADDING_END =
             "system:" + Settings.System.STATUSBAR_EXTRA_PADDING_END;
-
+    private static final String STATUSBAR_EXPANDED_EXTRA_PADDING_START =
+            "system:" + Settings.System.STATUSBAR_EXPANDED_EXTRA_PADDING_START;
+    private static final String STATUSBAR_EXPANDED_EXTRA_PADDING_TOP =
+            "system:" + Settings.System.STATUSBAR_EXPANDED_EXTRA_PADDING_TOP;
+    private static final String STATUSBAR_EXPANDED_EXTRA_PADDING_END =
+            "system:" + Settings.System.STATUSBAR_EXPANDED_EXTRA_PADDING_END;
+            
     private static final String TAG = "KeyguardStatusBarViewController";
     private static final AnimationProperties KEYGUARD_HUN_PROPERTIES =
             new AnimationProperties().setDuration(StackStateAnimator.ANIMATION_DURATION_STANDARD);
@@ -534,6 +540,9 @@ public class KeyguardStatusBarViewController extends ViewController<KeyguardStat
         mTunerService.addTunable(this, STATUSBAR_EXTRA_PADDING_START);
         mTunerService.addTunable(this, STATUSBAR_EXTRA_PADDING_TOP);
         mTunerService.addTunable(this, STATUSBAR_EXTRA_PADDING_END);
+        mTunerService.addTunable(this, STATUSBAR_EXPANDED_EXTRA_PADDING_START);
+        mTunerService.addTunable(this, STATUSBAR_EXPANDED_EXTRA_PADDING_TOP);
+        mTunerService.addTunable(this, STATUSBAR_EXPANDED_EXTRA_PADDING_END);
         updateUserSwitcher();
         onThemeChanged();
         if (!Flags.glanceableHubV2()) {
@@ -624,12 +633,15 @@ public class KeyguardStatusBarViewController extends ViewController<KeyguardStat
             case STATUSBAR_EXTRA_PADDING_START:
             case STATUSBAR_EXTRA_PADDING_TOP:
             case STATUSBAR_EXTRA_PADDING_END:
+            case STATUSBAR_EXPANDED_EXTRA_PADDING_START:
+            case STATUSBAR_EXPANDED_EXTRA_PADDING_TOP:
+            case STATUSBAR_EXPANDED_EXTRA_PADDING_END:
                 mView.loadDimens();
                 mView.updatePaddings();
                 break;
             default:
                 break;
-         }
+        }
     }
 
     /** Should be called when the theme changes. */

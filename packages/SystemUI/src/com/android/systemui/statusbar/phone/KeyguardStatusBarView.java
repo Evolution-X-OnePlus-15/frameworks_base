@@ -123,6 +123,10 @@ public class KeyguardStatusBarView extends RelativeLayout {
     private int mStatusBarExtraPaddingStart = 0;
     private int mStatusBarExtraPaddingTop = 0;
     private int mStatusBarExtraPaddingEnd = 0;
+    
+    private int mStatusBarExpandedExtraPaddingStart = 0;
+    private int mStatusBarExpandedExtraPaddingTop = 0;
+    private int mStatusBarExpandedExtraPaddingEnd = 0;
 
     public KeyguardStatusBarView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -236,6 +240,19 @@ public class KeyguardStatusBarView extends RelativeLayout {
                 mContext.getContentResolver(),
                 Settings.System.STATUSBAR_EXTRA_PADDING_END, 0,
                 UserHandle.USER_CURRENT));
+        mStatusBarExpandedExtraPaddingStart = convertToDip(Settings.System.getIntForUser(
+                mContext.getContentResolver(),
+                Settings.System.STATUSBAR_EXPANDED_EXTRA_PADDING_START, 0,
+                UserHandle.USER_CURRENT));
+        mStatusBarExpandedExtraPaddingTop = convertToDip(Settings.System.getIntForUser(
+                mContext.getContentResolver(),
+                Settings.System.STATUSBAR_EXPANDED_EXTRA_PADDING_TOP, 0,
+                UserHandle.USER_CURRENT));
+        mStatusBarExpandedExtraPaddingEnd = convertToDip(Settings.System.getIntForUser(
+                mContext.getContentResolver(),
+                Settings.System.STATUSBAR_EXPANDED_EXTRA_PADDING_END, 0,
+                UserHandle.USER_CURRENT));
+                
         mSystemIconsSwitcherHiddenExpandedMargin = res.getDimensionPixelSize(
                 R.dimen.system_icons_switcher_hidden_expanded_margin);
         mStatusBarPaddingEnd = res.getDimensionPixelSize(
@@ -246,23 +263,32 @@ public class KeyguardStatusBarView extends RelativeLayout {
                 R.dimen.display_cutout_margin_consumption);
     }
 
+
     void updatePaddings() {
+        int paddingTop = getResources().getDimensionPixelSize(R.dimen.status_bar_padding_top)
+                + mStatusBarExtraPaddingTop + mStatusBarExpandedExtraPaddingTop;
+        int paddingStart = getResources().getDimensionPixelSize(R.dimen.status_bar_padding_start)
+                + mStatusBarExtraPaddingStart + mStatusBarExpandedExtraPaddingStart;
+        int paddingEnd = getResources().getDimensionPixelSize(R.dimen.status_bar_padding_end)
+                + mStatusBarExtraPaddingEnd + mStatusBarExpandedExtraPaddingEnd;
+
         // mStatusIconArea
         mStatusIconArea.setPaddingRelative(
                 mStatusIconArea.getPaddingStart(),
-                getResources().getDimensionPixelSize(R.dimen.status_bar_padding_top) + mStatusBarExtraPaddingTop,
-                getResources().getDimensionPixelSize(R.dimen.status_bar_padding_end) + mStatusBarExtraPaddingEnd,
+                paddingTop,
+                paddingEnd,
                 mStatusIconArea.getPaddingBottom()
         );
 
         // mCarrierLabel
         mCarrierLabel.setPaddingRelative(
-                getResources().getDimensionPixelSize(R.dimen.status_bar_padding_start) + mStatusBarExtraPaddingStart,
-                getResources().getDimensionPixelSize(R.dimen.status_bar_padding_top) + mStatusBarExtraPaddingTop,
+                paddingStart,
+                paddingTop,
                 mCarrierLabel.getPaddingEnd(),
                 mCarrierLabel.getPaddingBottom()
         );
     }
+    
 
     private void updateVisibilities() {
         // Multi user avatar is disabled in favor of the user switcher chip
