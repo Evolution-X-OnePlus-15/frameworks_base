@@ -7566,6 +7566,27 @@ public final class Settings {
          */
         public static final String EDGE_LIGHT_STYLE = "edge_light_style";
 
+        /**
+         * @hide
+         */
+        public static final String STATUSBAR_EXPANDED_EXTRA_PADDING_START = "statusbar_expanded_extra_padding_start";
+
+        /**
+         * @hide
+         */
+        public static final String STATUSBAR_EXPANDED_EXTRA_PADDING_TOP = "statusbar_expanded_extra_padding_top";
+
+        /**
+         * @hide
+         */
+        public static final String STATUSBAR_EXPANDED_EXTRA_PADDING_END = "statusbar_expanded_extra_padding_end";
+        
+        /**
+         * User definable value of pulse notification screen brightness
+         * @hide
+         */
+        public static final String PULSE_BRIGHTNESS = "pulse_brightness";
+
         /** 
          * Edge light glow spread
          * @hide 
