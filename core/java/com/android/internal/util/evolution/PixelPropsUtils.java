@@ -155,7 +155,6 @@ public final class PixelPropsUtils {
     private static volatile boolean sIsExcluded;
     private static volatile String sProcessName;
 
-    private static final boolean sIsCustomForkBuild = detectCustomFork();
     private static final boolean sIsMainlineDevice = detectMainlinePixelDevice();
 
     private static volatile boolean sPhotosSpoofEnabled = true;
@@ -164,29 +163,6 @@ public final class PixelPropsUtils {
     private static volatile boolean sInitialized = false;
     private static volatile Set<String> sPpTargets = null;
     private static volatile String sPpModel = null;
-
-    private static boolean detectCustomFork() {
-        char[] k = new char[]{'d','e','v','o','l','u','t','i','o','n'};
-        String needle = new String(k);
-
-        String[] props = {
-            SystemProperties.get("ro.build.display.id", ""),
-            SystemProperties.get("ro.modversion", ""),
-            SystemProperties.get("ro.evolution.version", ""),
-            SystemProperties.get("ro.build.flavor", "")
-        };
-
-        for (String p : props) {
-            if (p != null && p.toLowerCase().contains(needle)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public static boolean isCustomForkBuild() {
-        return sIsCustomForkBuild;
-    }
 
     static {
         propsToKeep = new HashMap<>();
@@ -302,11 +278,6 @@ public final class PixelPropsUtils {
     }
 
     public static void setProps(Context context) {
-        if (sIsCustomForkBuild) {
-            if (DEBUG) Log.d(TAG, "Custom fork detected → disabling prop spoofing");
-            return;
-        }
-
         if (Process.isIsolated()) {
             if (DEBUG) Log.d(TAG, "Skipping setProps in isolated process");
             return;
