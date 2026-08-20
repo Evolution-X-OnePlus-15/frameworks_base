@@ -7489,6 +7489,12 @@ public final class Settings {
         public static final String STATUS_BAR_LOGO_CUSTOM_IMAGE_URI = "status_bar_logo_custom_image_uri";
 
         /**
+         * Whether to show battery level and charging information on the always-on display
+         * @hide
+         */
+        public static final String AOD_BATTERY_INFO = "aod_battery_info";
+
+        /**
          * Whether to use the custom status bar header or not
          * @hide
          */
