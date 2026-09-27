@@ -4275,7 +4275,7 @@ public class LockSettingsService extends ILockSettings.Stub {
 
     @Override
     public boolean hasDuressCredentials(LockscreenCredential ownerCredential) {
-        checkPasswordHavePermission();
+        checkHavePermission();
         try {
             return duressPasswordHelper.hasDuressCredentials(ownerCredential);
         } finally {
